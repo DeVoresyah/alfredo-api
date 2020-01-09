@@ -7,7 +7,7 @@ class OrderSchema extends Schema {
   up () {
     this.create('order', (table) => {
       table.increments()
-      table.string('invoice_id').notNullable().unique()
+      table.string('invoice_id', 150).notNullable().unique()
       table.integer('product_id').unsigned().notNullable()
       table.integer('qty').unsigned().notNullable()
       table.integer('user_id').unsigned().notNullable()
