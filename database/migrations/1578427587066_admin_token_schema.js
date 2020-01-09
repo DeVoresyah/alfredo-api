@@ -8,7 +8,7 @@ class AdminTokenSchema extends Schema {
     this.create('admin_tokens', (table) => {
       table.increments()
       table.integer('user_id').unsigned().references('id').inTable('admins')
-      table.string('token', 255).notNullable().unique().index()
+      table.string('token', 150).notNullable().unique().index()
       table.string('type', 80).notNullable()
       table.boolean('is_revoked').defaultTo(false)
       table.timestamps()

@@ -10,7 +10,7 @@ class AdminSchema extends Schema {
       table.string('username', 80).notNullable().unique()
       table.string('name').notNullable()
       table.string('phone_number', 16).notNullable()
-      table.string('email', 254).notNullable().unique()
+      table.string('email', 100).notNullable().unique()
       table.enu('role', ['admin', 'sales']).notNullable()
       table.string('password', 60).notNullable()
       table.timestamps()
