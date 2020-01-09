@@ -7,7 +7,7 @@ class ConfirmationSchema extends Schema {
   up () {
     this.create('confirmation', (table) => {
       table.increments()
-      table.string('invoice_id', 150).notNullable().unique().notNullable().unique()
+      table.string('invoice_id', 150).notNullable().unique()
       table.integer('user_id').unsigned().notNullable()
       table.string('sender_name').notNullable()
       table.string('sender_bank').notNullable()
