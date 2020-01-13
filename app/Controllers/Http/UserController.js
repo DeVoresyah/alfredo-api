@@ -10,6 +10,27 @@ class UserController extends BaseController {
         super()
     }
 
+    async index({ request, response }) {
+        const { page, limit, q } = request.get()
+
+        let keyword = `%${decodeURIComponent(q)}%`
+        let query = User.query()
+
+        if (q) {
+            query.where('username', 'like', keyword)
+                .orWhere('name', 'like', keyword)
+                .orWhere('phone_number', 'like', keyword)
+                .orWhere('email', 'like', keyword)
+        }
+
+        const users = await query.setHidden(['password']).orderBy('created_at', 'desc').paginate( page ? page : 1, limit ? limit : 10)
+
+        console.log(q)
+        console.log(users.toJSON())
+
+        await this.findResponse({ data: users, request, response })
+    }
+
     async store({ auth, request, response }) {
         // const { name, username, phone, email, password } = request.post()
         const data = request.post()

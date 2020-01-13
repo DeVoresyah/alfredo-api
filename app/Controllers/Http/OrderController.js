@@ -29,6 +29,21 @@ class OrderController extends BaseController {
       await this.sendResponse({ data: orders, request, response })
   }
 
+  async list({ request, response }) {
+    const { page, limit, q } = request.get()
+
+    let keyword = `%${decodeURIComponent(q)}%`
+    let query = Order.query()
+
+    if (q) {
+      query.where('invoice_id', 'like', keyword)
+          .orWhere('status', 'like', keyword)
+    }
+
+    const orders = await query.with('product').orderBy('created_at', 'desc').paginate(page ? page : 1, limit ? limit : 10)
+    await this.sendResponse({ data:orders, request, response })
+  }
+
   async store ({ request, response }) {
     const { uid } = request.decoded
     const data = request.post()
@@ -117,7 +132,7 @@ class OrderController extends BaseController {
       sender_bank,
       amount,
       image: newName,
-      status: 'pending'
+      status: 'unpaid'
     }
 
     try {
@@ -140,6 +155,20 @@ class OrderController extends BaseController {
         response,
       })
     }
+  }
+
+  async updateDone({ params, request, response }) {
+    const { id } = params
+
+    const order = await Order.find(id)
+    const product = await Product.find(order.product_id)
+
+    order.status = "done"
+    product.stock = product.stock - order.qty
+
+    await order.save()
+    await product.save()
+    await this.sendResponse({ data: { msg: 'Order has been complete.' }, request, response })
   }
 
   async update ({ params, request, response }) {

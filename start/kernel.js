@@ -40,7 +40,7 @@ const namedMiddleware = {
   guest: 'Adonis/Middleware/AllowGuestOnly',
   httpAuth: 'App/Middleware/HttpAuth',
   userSession: 'App/Middleware/UserSession',
-  adminAuth: 'APp/Middleware/AdminAuth',
+  adminAuth: 'App/Middleware/AdminAuth',
 }
 
 /*

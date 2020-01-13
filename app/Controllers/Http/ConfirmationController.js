@@ -1,91 +1,60 @@
 'use strict'
 
-/** @typedef {import('@adonisjs/framework/src/Request')} Request */
-/** @typedef {import('@adonisjs/framework/src/Response')} Response */
-/** @typedef {import('@adonisjs/framework/src/View')} View */
+const BaseController = use('BaseController')
+const Helpers = use('Helpers')
+const Confirmation = use('App/Models/Confirmation')
+const Order = use('App/Models/Order')
 
-/**
- * Resourceful controller for interacting with confirmations
- */
-class ConfirmationController {
-  /**
-   * Show a list of all confirmations.
-   * GET confirmations
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
-  async index ({ request, response, view }) {
+class ConfirmationController extends BaseController {
+  constructor() {
+    super()
   }
 
-  /**
-   * Render a form to be used for creating a new confirmation.
-   * GET confirmations/create
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
+  async index ({ request, response, view }) {
+    const { page, limit, q } = request.get()
+
+    let keyword = `%${decodeURIComponent(q)}%`
+    let query = Confirmation.query()
+
+    if (q) {
+      query.where('invoice_id', 'like', keyword)
+        .orWhere('sender_name', 'like', keyword)
+        .orWhere('sender_bank', 'like', keyword)
+        .orWhere('status', 'like', keyword)
+    }
+
+    const confirms = await query.orderBy('created_at', 'desc').paginate(page ? page : 1, limit ? limit : 10)
+    await this.sendResponse({ data:confirms, request, response })
+  }
+
+  async accept({ params, request, response }) {
+    const { id } = params
+
+    const confirms = await Confirmation.find(id)
+    const order = await Order.findBy('invoice_id', confirms.invoice_id)
+    order.status = "process"
+    confirms.status = "paid"
+
+    order.save()
+    confirms.save()
+    await this.sendResponse({ data: { msg: 'Payment confirmation has been accepted.' }, request, response })
+  }
+
   async create ({ request, response, view }) {
   }
 
-  /**
-   * Create/save a new confirmation.
-   * POST confirmations
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async store ({ request, response }) {
   }
 
-  /**
-   * Display a single confirmation.
-   * GET confirmations/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async show ({ params, request, response, view }) {
   }
 
-  /**
-   * Render a form to update an existing confirmation.
-   * GET confirmations/:id/edit
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   * @param {View} ctx.view
-   */
   async edit ({ params, request, response, view }) {
   }
 
-  /**
-   * Update confirmation details.
-   * PUT or PATCH confirmations/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async update ({ params, request, response }) {
   }
 
-  /**
-   * Delete a confirmation with id.
-   * DELETE confirmations/:id
-   *
-   * @param {object} ctx
-   * @param {Request} ctx.request
-   * @param {Response} ctx.response
-   */
   async destroy ({ params, request, response }) {
   }
 }

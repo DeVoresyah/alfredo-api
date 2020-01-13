@@ -14,6 +14,27 @@ class CategoryController extends BaseController {
         const category = await Category.all()
         await this.sendResponse({ data:category, request, response })
     }
+
+    async list({ request, response }) {
+        const { page, limit, q } = request.get()
+
+        let keyword = `%${decodeURIComponent(q)}%`
+        let query = Category.query()
+
+        if (q) {
+            query.where('title', 'like', keyword)
+        }
+
+        const categories = await query.orderBy('created_at', 'desc').paginate(page ? page : 1, limit ? limit : 10)
+        await this.sendResponse({ data:categories, request, response })
+    }
+
+    async update({ params, request, response }) {
+        const { id } = params
+        const data = request.post()
+
+        const category = await Category.find(id)
+    }
     
     async show({ params, request, response }) {
         const { slug } = params

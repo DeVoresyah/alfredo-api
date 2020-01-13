@@ -57,12 +57,38 @@ Route.group(() => {
 }).prefix('api/admin/v1').middleware(['httpAuth'])
 
 Route.group(() => {
+  // Static Data
+  Route.get(`/static/status-order`, 'StaticDataController.statusOrder')
+  Route.get(`/static/status-confirmation`, 'StaticDataController.statusConfirmation')
+
+  Route.get(`/dashboard`, 'DashboardController.index')
+
+  // User
+  Route.get(`/users`, 'UserController.index')
+  Route.post(`/users/add`, 'UserController.store')
+
+  // Product
   Route.get('/products', 'ProductController.index')
-  Route.get('/category', 'CategoryController.index')
-  Route.get(`/order`, 'OrderController.index')
+  Route.get('/products/:slug', 'ProductController.show')
+  Route.post(`/products/add`, 'ProductController.store')  
+  Route.delete(`/products/:id`, 'ProductController.destroy')
+  Route.patch(`/products/:id`, 'ProductController.update')
+
+  Route.get('/categories', 'CategoryController.list')
+
+  // Orders
+  Route.get(`/orders`, 'OrderController.list')
+  Route.patch(`/orders/:id/done`, 'OrderController.updateDone')
+
+  // Confirmations
+  Route.get(`/confirmations`, 'ConfirmationController.index')
+  Route.patch(`/confirmations/:id/accept`, 'ConfirmationController.accept')
 }).prefix('api/admin/v1').middleware(['httpAuth', 'adminAuth'])
 
 // Public API
 Route.get(`/uploads/confirmation/:file`, async({ response, params}) => {
   return response.download(Helpers.tmpPath(`uploads/confirmation/${params.file}`))
+})
+Route.get(`/product/thumbnail/:file`, async({ response, params}) => {
+  return response.download(Helpers.tmpPath(`uploads/thumbnail/${params.file}`))
 })

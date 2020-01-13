@@ -17,8 +17,6 @@ class AdminController extends BaseController {
         .where('username', username)
         .first()
 
-    console.log(user)
-
     if (user) {
         const passwordVerified = await Hash.verify(password, user.password)
 
