@@ -101,6 +101,16 @@ class BaseController {
             })
         }
     }
+
+    async deleteResponse({ request, response }) {
+        response.status(204).json({
+            response: {
+                status: 204,
+                message: HttpStatus.getStatusText(204),
+                url: request.hostname() + request.originalUrl()
+            }
+        })
+    }
 }
 
 module.exports = BaseController

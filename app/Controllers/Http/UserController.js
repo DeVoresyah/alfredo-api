@@ -25,10 +25,22 @@ class UserController extends BaseController {
 
         const users = await query.setHidden(['password']).orderBy('created_at', 'desc').paginate( page ? page : 1, limit ? limit : 10)
 
-        console.log(q)
-        console.log(users.toJSON())
-
         await this.findResponse({ data: users, request, response })
+    }
+
+    async show({ params, request, response }) {
+        const { uid } = params
+
+        const user = await User.findBy("id", uid)
+        if (!user) {
+            await this.findResponse({
+                data: null,
+                request,
+                response
+            })
+        } else {
+            await this.findResponse({ data: user, request, response })
+        }
     }
 
     async store({ auth, request, response }) {
@@ -107,6 +119,54 @@ class UserController extends BaseController {
                 request,
                 response
             })
+        }
+    }
+
+    async update({ params, request, response }) {
+        const { uid } = params
+        const { user } = request.post()
+
+        console.log(user)
+
+        const findUser = await User.findBy('id', uid)
+        if (!findUser) {
+            await this.findResponse({
+                data: null,
+                errorMsg: 'Cannot find user.',
+                request,
+                response
+            })
+        } else {
+            const { name, phone_number, email } = user
+
+            findUser.name = name
+            findUser.phone_number = phone_number
+            findUser.email = email
+            await findUser.save()
+            const updatedUser = await User.findBy('id', uid)
+
+            await this.sendResponse({
+                data: updatedUser,
+                request,
+                response
+            })
+        }
+    }
+
+    async destroy({ params, request, response }) {
+        const { uid } = params
+
+        const user = await User.findBy('id', uid)
+        if (!user) {
+            await this.findResponse({
+                data: null,
+                errorMsg: 'Cannot find user.',
+                request,
+                response
+            })
+        } else {
+            await user.delete()
+            await this.deleteResponse({ request, response })
         }
     }
 }

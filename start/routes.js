@@ -65,7 +65,10 @@ Route.group(() => {
 
   // User
   Route.get(`/users`, 'UserController.index')
+  Route.get(`/users/:uid`, 'UserController.show')
   Route.post(`/users/add`, 'UserController.store')
+  Route.patch(`/users/:uid`, 'UserController.update')
+  Route.delete(`/users/:uid`, 'UserController.destroy')
 
   // Product
   Route.get('/products', 'ProductController.index')
