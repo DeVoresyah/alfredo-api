@@ -27,7 +27,7 @@
     "@adonisjs/validator": "^5.0.6",
     "adonis-lucid-optional-queries": "^1.0.1",
     "http-status-codes": "^1.3.2",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mysql": "^2.17.1"
   },
   "devDependencies": {},
